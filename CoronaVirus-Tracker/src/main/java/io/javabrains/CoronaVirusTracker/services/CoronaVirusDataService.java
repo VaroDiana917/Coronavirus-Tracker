@@ -22,7 +22,7 @@ public class CoronaVirusDataService {
     private List<LocationStats> allStats = new ArrayList<>();
 
     @PostConstruct
-    @Scheduled(cron = "* * 1 * * *") //how often to run method : second-minute-hour-day-month-year
+    @Scheduled(cron = "0 0 0 * * ?") //how often to run method : <second> <minute> <hour> <day-of-month> <month> <day-of-week> => so we execute the 1st hour of every day
     public void fetchVirusData() throws IOException, InterruptedException {
        List<LocationStats> newStats = new ArrayList<>();
         HttpClient client = HttpClient.newHttpClient();
@@ -31,7 +31,7 @@ public class CoronaVirusDataService {
                                     .build();
         HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        //Header auto-detection
+        //Parse string reader with header auto-detection
         StringReader csvBodyReader = new StringReader(httpResponse.body());
         Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
         for (CSVRecord record : records) {
